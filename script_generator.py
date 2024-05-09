@@ -6,7 +6,7 @@ from lyzr_automata import Logger
 from lyzr import Generator
 
 # Initialize the content generator
-def script_generator(API_KEY, user_input, preference=None):
+def script_generator(API_KEY, user_input, preference=''):
     generator = Generator(api_key=API_KEY)
     if preference != '':
         script = generator.generate(text=user_input,instructions=f'Instagram Reel script for 60 seconds video, having the timestamp and visuals for each scence. You can Use this preference: "{preference}"')
