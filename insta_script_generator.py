@@ -82,7 +82,7 @@ def generate_script(instruction, refrence=None):
 
 # Function to save edited prompt
 def save_prompt(text):
-    with open("prompt.txt", "a") as file:
+    with open("prompt.txt", "w") as file:
         file.write(text)
 
 
