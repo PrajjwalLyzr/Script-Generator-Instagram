@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 from PIL import Image
-from script_generator import script_generator, content_creator
+import insta_script_generator
 
 # page config
 st.set_page_config(
@@ -31,27 +31,64 @@ st.title('Script Generator for Instagram')
 st.markdown('This app, the Script Generator for Instagram, will assist you in creating an appealing script for your Instagram video !!!')
 
 
-api_key = st.sidebar.text_input('Enter OpenAI API Key', type='password')
+# Setting up the sidebar for input
+st.sidebar.title("Instagram Script Generator")
+api_key = st.sidebar.text_input("Enter your OpenAI API key", type='password')
+submit_api_key = st.sidebar.button("Submit API Key")
+if submit_api_key:
+    insta_script_generator.save_api_key(api_key)
+    st.sidebar.success("API Key saved!")
 
-user_input = st.text_area('Write a brief about your idea.')
+# Navigation
+page = st.sidebar.radio("Navigation", ["Add Examples", "Generate Script", "Edit Prompt"])
 
-example = st.sidebar.text_area('Input: Provide any example of a script you want. (Optional)',height=370)
+if page == "Add Examples":
+    st.subheader('Add Your Example Text Here')
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        example_text1 = st.text_area("Example 1", height=400)
+    with col2:
+        example_text2 = st.text_area("Example 2", height=400)
+    with col3:
+        example_text3 = st.text_area("Example 3", height=400)
 
-if api_key:
-    api_key = api_key.replace(" ","")
-    if user_input:
-        if st.button('Submit'):
-            inital_script = script_generator(API_KEY=api_key,user_input=user_input, preference=example)
-            generated_output = content_creator(script=inital_script, API_KEY=api_key)
-            final_script = generated_output[0]['task_output']
-            st.subheader('Script for your Instagram video')
-            st.write(final_script)
-           
+    submit_example = st.button("Submit Example")
+    if submit_example:
+        with open('examples.txt', 'r') as file:
+            text = file.read()
+
+        if text != '':
+            with open('examples.txt', 'w') as file:
+                pass
+
+        insta_script_generator.save_example(example_text1)
+        insta_script_generator.save_example(example_text2)
+        insta_script_generator.save_example(example_text3)
+        st.success("Example added!")
+
+elif page == "Generate Script":
+    instruction = st.text_input("Enter Your Instructions")
+    submit_instruction = st.button("Generate Script")
+    with open('examples.txt', 'r') as file:
+        refrence = file.read()
+    if submit_instruction:
+        output = insta_script_generator.generate_script(instruction, refrence=refrence)
+        st.subheader('Generated Script')
+        st.write(output)
+        # st.text_area("Generated Script", value=output, height=300)
+
+elif page == "Edit Prompt":
+    # Loading existing prompt if available
+    if os.path.exists("prompt.txt"):
+        with open("prompt.txt", "r") as file:
+            existing_prompt = file.read()
     else:
-        st.warning('Please provide a brief description of your script.')
-else:
-    st.sidebar.warning("Input: Enter your API key to proceed.")
-
+        existing_prompt = ""
+    prompt_text = st.text_area("Edit your prompt here:", value=existing_prompt, height=300)
+    save_prompt_button = st.button("Save Prompt")
+    if save_prompt_button:
+        insta_script_generator.save_prompt(prompt_text)
+        st.success("Prompt saved!")
 
 
 with st.expander("ℹ️ - About this App"):
