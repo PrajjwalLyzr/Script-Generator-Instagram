@@ -9,16 +9,51 @@ genai.configure(api_key=GOOGLE_API_KEY)
 
 def script_generator(API_KEY, user_input, reference=''):
     generator = Generator(api_key=API_KEY)
-    if reference != '':
-        script = generator.generate(text=user_input,instructions=f'Instagram Reel script for 60 seconds video, having the timestamp, visuals and voice over for each scence. You can Use this refrence: "{reference}". [!Important] avoid reponse intro and conclusion')
-    else:
+    if reference == '':
         script = generator.generate(text=user_input,instructions=f'Instagram Reel script for 60 seconds video, having the timestamp, visuals and voice over for each scence. [!Important] avoid reponse intro and conclusion')
+    else:
+        script = generator.generate(text=user_input,instructions=f'Instagram Reel script for 60 seconds video, having the timestamp, visuals and voice over for each scence. You can Use this refrence: "{reference}". [!Important] avoid reponse intro and conclusion')
     return script
 
 
 def script_finetuner(first_draft):
     prompt = f"""
-                Fine-tune this: "{first_draft}" Instagram reel script to make it more engaging and attractive to various audiences. [!Important] The script duration will be 60 seconds. Include timestamp sections, visuals, and voiceover for each scene. Avoid the introduction text of the response.
+                Fine-tune this: "{first_draft}" Instagram reel script to make it more engaging and attractive to various audiences. [!Important]. Avoid the introduction and conclusion text of the response.
+                Use this template for script:
+
+                
+                [00:00 - 00:05]
+                - Visual: 
+                - Voiceover: 
+
+                [00:05 - 00:10]
+                - Visual: 
+                - Voiceover: 
+
+                [00:10 - 00:17]
+                - Visual: 
+                - Voiceover: 
+
+                [00:17 - 00:20]
+                - Visual: 
+                - Voiceover: 
+
+                [00:20 - 00:30]
+                - Visual: 
+                - Voiceover: 
+
+                [00:30 - 00:40]
+                - Visual: 
+                - Voiceover: 
+
+                [00:40 - 00:50]
+                - Visual: 
+                - Voiceover: 
+
+                [00:50 - 01:00]
+                - Visual: 
+                - Voiceover: 
+            
                 """
     model = genai.GenerativeModel('gemini-pro')
     response = model.generate_content(prompt)
@@ -47,7 +82,7 @@ def generate_script(instruction, refrence=None):
 
 # Function to save edited prompt
 def save_prompt(text):
-    with open("prompt.txt", "w") as file:
+    with open("prompt.txt", "a") as file:
         file.write(text)
 
 

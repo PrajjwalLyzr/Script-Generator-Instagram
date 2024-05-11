@@ -35,6 +35,7 @@ st.markdown('This app, the Script Generator for Instagram, will assist you in cr
 st.sidebar.title("Instagram Script Generator")
 api_key = st.sidebar.text_input("Enter your OpenAI API key", type='password')
 submit_api_key = st.sidebar.button("Submit API Key")
+
 if submit_api_key:
     insta_script_generator.save_api_key(api_key)
     st.sidebar.success("API Key saved!")
@@ -67,12 +68,17 @@ if page == "Add Examples":
         st.success("Example added!")
 
 elif page == "Generate Script":
-    instruction = st.text_input("Enter Your Instructions")
+    instruction = st.text_input("Enter Your Instructions") 
+    insta_script_generator.save_prompt(instruction)
     submit_instruction = st.button("Generate Script")
     with open('examples.txt', 'r') as file:
         refrence = file.read()
+
+    with open('prompt.txt', 'r') as file:
+        prompt = file.read()
+
     if submit_instruction:
-        output = insta_script_generator.generate_script(instruction, refrence=refrence)
+        output = insta_script_generator.generate_script(instruction=prompt, refrence=refrence)
         st.subheader('Generated Script')
         st.write(output)
         # st.text_area("Generated Script", value=output, height=300)
@@ -92,7 +98,7 @@ elif page == "Edit Prompt":
 
 
 with st.expander("ℹ️ - About this App"):
-    st.markdown("This app utilizes Lyzr's Generator and Automata Agent to generate an appealing script for 60-second Instagram videos.")
+    st.markdown("This app utilizes Lyzr's Generator agent to generate an appealing script for 60-second Instagram videos.")
     st.link_button("Lyzr", url='https://www.lyzr.ai/', use_container_width = True)
     st.link_button("Book a Demo", url='https://www.lyzr.ai/book-demo/', use_container_width = True)
     st.link_button("Discord", url='https://discord.gg/nm7zSyEFA2', use_container_width = True)
